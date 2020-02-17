@@ -21,8 +21,11 @@ function! GotoFile(w)
         let fullname = getcwd() . '/' . fname
         if ! filereadable(fullname)
             " the last try, using current directory based on file opened.
-            let fullname = expand('%:h') . '/' . fname
+            let fullname = simplify(expand('%:h') . '/' . fname . '.' . expand('%:e'))
         endif
+		if ! filereadable(fullname)
+			let fullname = simplify(expand('%:h') . '/' . fname)
+		endif
     endif
 
    " Open new window if requested
@@ -30,7 +33,7 @@ function! GotoFile(w)
         new
     endif
     " Use 'find' so path is searched like 'gf' would
-    execute 'find ' . pos . ' ' . fname
+    execute 'find ' . pos . ' ' . fullname
 endfunction
 
 set isfname+=: " include colon in filenames
